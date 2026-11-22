@@ -1,0 +1,147 @@
+{
+  "base": "http://localhost:3000",
+  "executedAt": "2026-11-22T18:16:28.704Z",
+  "results": [
+    {
+      "width": 320,
+      "status": "passed",
+      "pages": [
+        {
+          "path": "/",
+          "status": 200,
+          "noHorizontalOverflow": true
+        },
+        {
+          "path": "/produtos",
+          "status": 200,
+          "noHorizontalOverflow": true
+        }
+      ],
+      "productImageLoaded": true,
+      "buyAreaUnobstructed": true,
+      "cartPersists": true,
+      "javascriptErrors": 0
+    },
+    {
+      "width": 375,
+      "status": "passed",
+      "pages": [
+        {
+          "path": "/",
+          "status": 200,
+          "noHorizontalOverflow": true
+        },
+        {
+          "path": "/produtos",
+          "status": 200,
+          "noHorizontalOverflow": true
+        }
+      ],
+      "productImageLoaded": true,
+      "buyAreaUnobstructed": true,
+      "cartPersists": true,
+      "javascriptErrors": 0
+    },
+    {
+      "width": 390,
+      "status": "passed",
+      "pages": [
+        {
+          "path": "/",
+          "status": 200,
+          "noHorizontalOverflow": true
+        },
+        {
+          "path": "/produtos",
+          "status": 200,
+          "noHorizontalOverflow": true
+        }
+      ],
+      "productImageLoaded": true,
+      "buyAreaUnobstructed": true,
+      "cartPersists": true,
+      "javascriptErrors": 0,
+      "accessibility": "4 pages passed"
+    },
+    {
+      "width": 430,
+      "status": "passed",
+      "pages": [
+        {
+          "path": "/",
+          "status": 200,
+          "noHorizontalOverflow": true
+        },
+        {
+          "path": "/produtos",
+          "status": 200,
+          "noHorizontalOverflow": true
+        }
+      ],
+      "productImageLoaded": true,
+      "buyAreaUnobstructed": true,
+      "cartPersists": true,
+      "javascriptErrors": 0
+    },
+    {
+      "width": 768,
+      "status": "passed",
+      "pages": [
+        {
+          "path": "/",
+          "status": 200,
+          "noHorizontalOverflow": true
+        },
+        {
+          "path": "/produtos",
+          "status": 200,
+          "noHorizontalOverflow": true
+        }
+      ],
+      "productImageLoaded": true,
+      "buyAreaUnobstructed": true,
+      "cartPersists": true,
+      "javascriptErrors": 0
+    },
+    {
+      "width": 1024,
+      "status": "passed",
+      "pages": [
+        {
+          "path": "/",
+          "status": 200,
+          "noHorizontalOverflow": true
+        },
+        {
+          "path": "/produtos",
+          "status": 200,
+          "noHorizontalOverflow": true
+        }
+      ],
+      "productImageLoaded": true,
+      "buyAreaUnobstructed": true,
+      "cartPersists": true,
+      "javascriptErrors": 0
+    },
+    {
+      "width": 1440,
+      "status": "passed",
+      "pages": [
+        {
+          "path": "/",
+          "status": 200,
+          "noHorizontalOverflow": true
+        },
+        {
+          "path": "/produtos",
+          "status": 200,
+          "noHorizontalOverflow": true
+        }
+      ],
+      "productImageLoaded": true,
+      "buyAreaUnobstructed": true,
+      "cartPersists": true,
+      "javascriptErrors": 0
+    }
+  ]
+}

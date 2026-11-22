@@ -60,3 +60,23 @@ Não haverá venda real habilitada enquanto as dependências obrigatórias estiv
 A retirada poderá ser acrescentada posteriormente como segunda modalidade, sem substituir a entrega. Sua ativação dependerá de endereço confirmado, horários, prazo de preparação, instruções ao cliente e fluxo administrativo de pedido pronto/retirado.
 
 Ao implementar a etapa 4, o pedido deverá guardar a modalidade de recebimento e os dados de entrega como um retrato da compra. Isso permitirá acrescentar retirada futuramente sem alterar os registros de pedidos já realizados. Enquanto estiver desativada, a retirada não aparecerá como opção de compra.
+
+## Auditoria mobile com o catálogo real
+
+A revisão foi repetida com o produto cadastrado no Supabase, em navegador Chromium isolado, sem capturar a tela do proprietário e sem alterar estoque ou criar pedidos. O carrinho usado no teste pertence somente ao contexto descartável do navegador automatizado.
+
+As sete larguras passaram: **320, 375, 390, 430, 768, 1024 e 1440 px**.
+
+Foram conferidos Home, catálogo, ficha de produto e carrinho, ausência de rolagem horizontal acidental, imagem real carregada, grid de duas colunas no celular, botões de compra com altura mínima de 44 px, área de compra livre do header e da navegação inferior, adição ao carrinho e persistência após recarregar. Nenhum erro JavaScript foi observado nessa execução.
+
+Em 390 px também foram testados abertura/fechamento da busca e do drawer de filtros e regras automatizadas WCAG A/AA nas quatro páginas, sem violações detectadas.
+
+Reprodução, com a loja em execução e pelo menos um produto ativo com estoque:
+
+```bash
+node scripts/audit-mobile.mjs
+```
+
+O endereço padrão é `http://localhost:3000`; a variável `AUDIT_BASE_URL` permite usar outro ambiente. Resultados: `artifacts/mobile-live-audit.json`.
+
+**Limite da validação:** são testes automatizados com viewport/toque emulados em Chromium. Não representam homologação física em Android ou iPhone/Safari. Essa verificação, incluindo teclado virtual, preenchimento de endereço e pagamento, deverá fazer parte da homologação do checkout mobile antes de vender.
