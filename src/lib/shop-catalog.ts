@@ -59,6 +59,17 @@ export const getCatalog = cache(async (): Promise<ShopCatalog> => {
       throw new Error(
         "Não foi possível carregar o catálogo. Tente novamente em instantes.",
       );
+  const availability = await db
+    .from("product_variant_availability")
+    .select("id,available_quantity");
+  if (
+    availability.error &&
+    !["PGRST205", "42P01"].includes(availability.error.code)
+  )
+    throw new Error("Não foi possível consultar a disponibilidade.");
+  const availableById = new Map(
+    (availability.data || []).map((v) => [v.id, v.available_quantity]),
+  );
   const mapped: Product[] = await Promise.all(
     (p.data || [])
       .filter((row) =>
@@ -98,7 +109,7 @@ export const getCatalog = cache(async (): Promise<ShopCatalog> => {
               sku: x.sku,
               price: x.price_cents,
               weight: x.weight_grams,
-              stock: x.stock_quantity,
+              stock: availableById.get(x.id) ?? x.stock_quantity,
             })),
         };
       }),

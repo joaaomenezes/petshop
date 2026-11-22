@@ -8,6 +8,7 @@ const links = [
   ["/admin/categorias", "Categorias"],
   ["/admin/marcas", "Marcas"],
   ["/admin/estoque", "Estoque"],
+  ["/admin/pedidos", "Pedidos"],
   ["/admin/fornecedores", "Fornecedores"],
   ["/admin/configuracoes", "Configurações"],
 ];

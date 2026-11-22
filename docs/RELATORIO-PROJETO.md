@@ -80,3 +80,7 @@ node scripts/audit-mobile.mjs
 O endereço padrão é `http://localhost:3000`; a variável `AUDIT_BASE_URL` permite usar outro ambiente. Resultados: `artifacts/mobile-live-audit.json`.
 
 **Limite da validação:** são testes automatizados com viewport/toque emulados em Chromium. Não representam homologação física em Android ou iPhone/Safari. Essa verificação, incluindo teclado virtual, preenchimento de endereço e pagamento, deverá fazer parte da homologação do checkout mobile antes de vender.
+
+## Etapa 4 — checkout em homologação
+
+O fluxo de visitante, endereço, revisão, pedidos privados, reservas e integração de pagamentos exclusivamente de testes foi implementado. A compra continua bloqueada: a migration 004 ainda não foi aplicada ao Supabase hospedado, faltam credenciais privadas, configuração HTTPS/webhook/agendador e regras definitivas de entrega. Frete automático e confirmação por e-mail permanecem pendentes. Retirada no local continua como evolução futura. Consulte [a configuração e os limites do checkout](CHECKOUT.md).

@@ -217,7 +217,7 @@ export function SiteFooter() {
             lançamento.
           </p>
           <p className="footer-demo">
-            {demo ? "Catálogo demonstrativo. " : ""}Checkout e conta estarão
+            {demo ? "Catálogo demonstrativo. " : ""}Pagamento e conta estarão
             disponíveis em uma versão futura.
           </p>
         </div>
@@ -227,7 +227,7 @@ export function SiteFooter() {
           © {brand.copyrightYear} {name}
         </span>
         <span>
-          {demo ? "Loja demonstrativa · " : ""}Checkout indisponível nesta
+          {demo ? "Loja demonstrativa · " : ""}Vendas reais indisponíveis nesta
           versão
         </span>
       </div>

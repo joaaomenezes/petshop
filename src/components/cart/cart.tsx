@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Trash2, LockKeyhole } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useCatalog } from "@/contexts/catalog-context";
 import { useCart } from "@/contexts/cart-context";
 import { cartTotal } from "@/lib/cart";
@@ -106,12 +106,12 @@ export function CartSummary({
         <strong>Total dos produtos</strong>
         <PriceDisplay value={cartTotal(lines, products)} />
       </div>
+      <Link className="button cart-checkout-link" href="/checkout">
+        Continuar para compra
+      </Link>
       <p>
-        <LockKeyhole size={18} /> Checkout em breve
-      </p>
-      <p>
-        O checkout estará disponível em uma versão futura. Nenhum pedido ou
-        pagamento é realizado nesta versão.
+        Você poderá informar seus dados, consultar a entrega e revisar o pedido.
+        Pagamentos permanecem em preparação.
       </p>
     </aside>
   );

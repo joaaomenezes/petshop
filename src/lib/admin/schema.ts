@@ -87,6 +87,7 @@ export type Entity = {
 };
 export type AdminVariant = z.infer<typeof variantSchema> & {
   product_id: string;
+  reserved_quantity?: number;
 };
 export type AdminProduct = Omit<ProductInput, "variants" | "images"> & {
   created_at: string;
@@ -103,7 +104,9 @@ export type Movement = {
   quantity: number;
   reason: string;
   created_at: string;
-  created_by: string;
+  created_by: string | null;
+  actor_kind?: "admin" | "system";
+  order_id?: string | null;
 };
 export type AdminData = {
   products: AdminProduct[];

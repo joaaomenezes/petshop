@@ -349,7 +349,12 @@ export function InventoryManager({ data }: { data: AdminData }) {
                   </td>
                   <td>{m.reason}</td>
                   <td>
-                    <small>{m.created_by}</small>
+                    <small>
+                      {m.created_by ||
+                        (m.actor_kind === "system"
+                          ? "Sistema · pagamento"
+                          : "Responsável não informado")}
+                    </small>
                   </td>
                 </tr>
               ))}
