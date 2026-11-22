@@ -1,5 +1,7 @@
 # Pet Piraju
 
+O [relatório do projeto](docs/RELATORIO-PROJETO.md) registra a direção comercial atual: loja online com entrega no lançamento e retirada no local reservada para uma fase futura, além do estado da integração e das dependências da etapa 4.
+
 E-commerce pet regional em Next.js App Router, TypeScript strict, Tailwind CSS, Radix/shadcn e Lucide. A identidade e os fluxos das etapas anteriores foram preservados. A etapa 3 acrescenta catálogo Supabase, autenticação administrativa, Storage, controle de estoque e validação Zod.
 
 ## Executar localmente
