@@ -13,7 +13,9 @@ export function filterProducts(
     .filter(
       (p) =>
         normalize(`${p.name} ${p.brand}`).includes(q) &&
-        (!params.get("categoria") || p.category === params.get("categoria")) &&
+        (!params.get("categoria") ||
+          p.category === params.get("categoria") ||
+          p.categoryAncestors?.includes(params.get("categoria")!)) &&
         (!params.get("especie") ||
           p.species === params.get("especie") ||
           p.species === "Ambos") &&

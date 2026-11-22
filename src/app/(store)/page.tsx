@@ -6,7 +6,13 @@ import { ProductGrid, SectionHeading, EmptyState } from "@/components/ui/shop";
 import { getCatalog } from "@/lib/shop-catalog";
 
 export default async function Home() {
-  const { products, categories, demo } = await getCatalog();
+  const {
+    products,
+    categories: allCategories,
+    rootCategories,
+    demo,
+  } = await getCatalog();
+  const categories = rootCategories ?? allCategories;
   const featured = products.filter((p) => demo || p.featured).slice(0, 4);
   return (
     <>

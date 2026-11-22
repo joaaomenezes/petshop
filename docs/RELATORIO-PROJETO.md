@@ -92,3 +92,11 @@ O desktop apresenta Cachorros, Gatos, Rações, Petiscos, Brinquedos, Higiene, A
 No mobile, Categorias abre `/categorias`, uma página com animais em destaque e grupos de Alimentação e Cuidados e acessórios. A barra inferior mantém cinco destinos. Dropdowns funcionam por clique/teclado e fecham com Escape, clique externo ou saída de foco.
 
 Validação: build, ESLint e TypeScript; navegação em 320, 375, 390, 430, 768, 1024 e 1440 px, sem rolagem horizontal, incluindo consulta por espécie e verificação automatizada WCAG A/AA em 390 px. Reprodução: `npx playwright test --config playwright.navigation.config.ts`, após `npm run build`.
+
+## Importação das subcategorias
+
+Em `/admin/categorias`, o bloco “Importar subcategorias da Pet Piraju” permite cadastrar as 29 subcategorias da lista do proprietário em um clique. Reaproveita os sete pais existentes, incluindo Rações e Cuidados, sem renomear pais, alterar slugs antigos ou mover produtos. O servidor verifica novamente o papel administrativo, consulta os registros atuais e envia um único INSERT com o lote que falta. Registros já existentes com os mesmos slugs/vínculos são preservados; conflitos interrompem a importação. Falhas do INSERT não deixam lote parcialmente criado. O painel mostra a categoria pai de cada subcategoria.
+
+A execução no Supabase depende do clique em uma sessão administrativa autenticada; a preparação do importador não significa que os registros remotos já foram criados. Nenhum segredo privado foi solicitado ou incluído no código.
+
+O menu e os destaques da Home continuam mostrando categorias raiz. O catálogo mantém as subcategorias nos filtros e passa a incluir produtos descendentes ao selecionar uma categoria pai, combinando normalmente com Cachorros/Gatos.

@@ -1,4 +1,5 @@
 "use client";
+import { SubcategoryImport } from "./subcategory-import";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -36,6 +37,9 @@ export function EntityManager({
               : "Fornecedores"}
         </h1>
       </div>
+      {kind === "categorias" && (
+        <SubcategoryImport categories={data.categories} />
+      )}
       <form
         key={edit?.id || "new"}
         className="admin-form admin-panel"
@@ -146,6 +150,14 @@ export function EntityManager({
                 <td>
                   {item.name}
                   <small>{item.slug || item.contact_info}</small>
+                  {kind === "categorias" && item.parent_id && (
+                    <small>
+                      Categoria pai:{" "}
+                      {data.categories.find(
+                        (category) => category.id === item.parent_id,
+                      )?.name || "Não disponível"}
+                    </small>
+                  )}
                 </td>
                 <td>{item.active ? "Ativo" : "Inativo"}</td>
                 <td>

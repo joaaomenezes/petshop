@@ -65,7 +65,8 @@ function Dropdown({
   );
 }
 export function CatalogNavigation() {
-  const { categories } = useCatalog();
+  const { categories: allCategories, rootCategories } = useCatalog();
+  const categories = rootCategories ?? allCategories;
   const navigation = shopNavigation(categories);
   return (
     <nav
@@ -118,7 +119,8 @@ export function CatalogNavigation() {
   );
 }
 export function CategoriesDirectory() {
-  const { categories } = useCatalog();
+  const { categories: allCategories, rootCategories } = useCatalog();
+  const categories = rootCategories ?? allCategories;
   const navigation = shopNavigation(categories);
   return (
     <div className="container categories-directory">

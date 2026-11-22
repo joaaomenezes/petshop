@@ -10,6 +10,7 @@ import type { Product } from "@/types/product";
 export type ShopCatalog = {
   products: Product[];
   categories: string[];
+  rootCategories?: string[];
   brands: string[];
   demo: boolean;
   name: string;
@@ -51,7 +52,7 @@ export const getCatalog = cache(async (): Promise<ShopCatalog> => {
       .select("product_id,storage_path,alt_text,sort_order")
       .order("sort_order"),
     db.from("brands").select("id,name").eq("active", true),
-    db.from("categories").select("id,name").eq("active", true),
+    db.from("categories").select("id,name,parent_id").eq("active", true),
     db.from("store_settings").select("name,slogan").single(),
   ]);
   for (const r of [p, v, i, b, c, s])
@@ -95,6 +96,21 @@ export const getCatalog = cache(async (): Promise<ShopCatalog> => {
           description: row.description,
           brand: b.data!.find((x) => x.id === row.brand_id)?.name || "",
           category: c.data!.find((x) => x.id === row.category_id)?.name || "",
+          categoryAncestors: (() => {
+            const ancestors: string[] = [];
+            const seen = new Set<string>([row.category_id]);
+            let parent = c.data!.find(
+              (x) => x.id === row.category_id,
+            )?.parent_id;
+            while (parent && !seen.has(parent)) {
+              seen.add(parent);
+              const category = c.data!.find((x) => x.id === parent);
+              if (!category) break;
+              ancestors.push(category.name);
+              parent = category.parent_id;
+            }
+            return ancestors;
+          })(),
           species: row.species,
           featured: row.featured,
           images: images.length
@@ -117,6 +133,9 @@ export const getCatalog = cache(async (): Promise<ShopCatalog> => {
   return {
     products: mapped,
     categories: (c.data || []).map((x) => x.name),
+    rootCategories: (c.data || [])
+      .filter((x) => !x.parent_id)
+      .map((x) => x.name),
     brands: (b.data || []).map((x) => x.name),
     demo: false,
     name: s.data?.name || brand.name,

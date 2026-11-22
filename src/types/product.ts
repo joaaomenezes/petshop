@@ -12,6 +12,7 @@ export type Product = {
   name: string;
   brand: string;
   category: string;
+  categoryAncestors?: string[];
   species: string;
   description: string;
   images: string[];
