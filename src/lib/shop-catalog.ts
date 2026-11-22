@@ -1,5 +1,6 @@
 import "server-only";
 import { cache } from "react";
+import { connection } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
 import { products as demoProducts } from "@/data/products";
@@ -25,6 +26,9 @@ export const getCatalog = cache(async (): Promise<ShopCatalog> => {
       name: brand.name,
       slogan: brand.slogan,
     };
+  // Keep live database reads out of build-time prerendering. The SDK handles
+  // fetch errors internally, so fetch's dynamic bailout must not be swallowed.
+  await connection();
   // Anonymous server client: never fetch cost or private administrator data.
   const db = createClient(config.url, config.key, {
     auth: { persistSession: false, autoRefreshToken: false },
