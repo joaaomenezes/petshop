@@ -2,15 +2,8 @@
 import Link from "next/link";
 import { Dialog } from "@/components/ui/dialog";
 import { usePathname } from "next/navigation";
-import {
-  Home,
-  Grid2X2,
-  Search,
-  ShoppingBag,
-  UserRound,
-  X,
-  MapPin,
-} from "lucide-react";
+import { Home, Grid2X2, Search, ShoppingBag, UserRound, X } from "lucide-react";
+import { CatalogNavigation } from "./catalog-navigation";
 import { useState } from "react";
 import { brand } from "@/config/brand";
 import { useCatalog } from "@/contexts/catalog-context";
@@ -53,7 +46,7 @@ export function AnnouncementBar() {
   );
 }
 export function SiteHeader() {
-  const { categories, name, demo } = useCatalog();
+  const { name } = useCatalog();
   const [modal, setModal] = useState<"search" | "account" | null>(null);
   return (
     <>
@@ -89,20 +82,7 @@ export function SiteHeader() {
             </Link>
           </div>
         </div>
-        <nav className="container desktop-nav" aria-label="Categorias">
-          <Link href="/produtos">Todos os produtos</Link>
-          {categories.map((c) => (
-            <Link
-              href={`/produtos?${demo && (c === "Gatos" || c === "Cachorros") ? "especie" : "categoria"}=${encodeURIComponent(c)}`}
-              key={c}
-            >
-              {c}
-            </Link>
-          ))}
-          <span>
-            <MapPin size={14} /> Feito para Piraju
-          </span>
-        </nav>
+        <CatalogNavigation />
       </header>
       <MobileNavigation open={setModal} />
       {modal && (
@@ -147,7 +127,7 @@ export function MobileNavigation({
     <nav className="mobile-nav" aria-label="Navegação principal">
       {[
         { label: "Início", href: "/", icon: Home },
-        { label: "Categorias", href: "/produtos", icon: Grid2X2 },
+        { label: "Categorias", href: "/categorias", icon: Grid2X2 },
         { label: "Buscar", action: "search", icon: Search },
         { label: "Carrinho", href: "/carrinho", icon: ShoppingBag },
         { label: "Conta", action: "account", icon: UserRound },
@@ -164,13 +144,13 @@ export function MobileNavigation({
             key={item.label}
             className={
               path === item.href ||
-              (item.href === "/produtos" && path.startsWith("/produto/"))
+              (item.href === "/categorias" && path.startsWith("/produto"))
                 ? "active"
                 : ""
             }
             aria-current={
               path === item.href ||
-              (item.href === "/produtos" && path.startsWith("/produto/"))
+              (item.href === "/categorias" && path.startsWith("/produto"))
                 ? "page"
                 : undefined
             }

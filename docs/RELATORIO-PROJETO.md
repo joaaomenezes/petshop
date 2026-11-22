@@ -84,3 +84,11 @@ O endereço padrão é `http://localhost:3000`; a variável `AUDIT_BASE_URL` per
 ## Etapa 4 — checkout em homologação
 
 O fluxo de visitante, endereço, revisão, pedidos privados, reservas e integração de pagamentos exclusivamente de testes foi implementado. A compra continua bloqueada: a migration 004 ainda não foi aplicada ao Supabase hospedado, faltam credenciais privadas, configuração HTTPS/webhook/agendador e regras definitivas de entrega. Frete automático e confirmação por e-mail permanecem pendentes. Retirada no local continua como evolução futura. Consulte [a configuração e os limites do checkout](CHECKOUT.md).
+
+## Navegação por pet e categorias
+
+O desktop apresenta Cachorros, Gatos, Rações, Petiscos, Brinquedos, Higiene, Acessórios e Mais. Os dropdowns por pet combinam espécie com categoria; Mais reúne Camas, Cuidados, categorias adicionais cadastradas e acesso ao catálogo completo. Os rótulos curtos são apenas de apresentação: os links usam os nomes oficiais encontrados no catálogo, sem atualizar categorias ou slugs no Supabase. Quando uma categoria ainda não está cadastrada, o atalho usa a busca do catálogo pelo termo correspondente, sem criar uma categoria fictícia.
+
+No mobile, Categorias abre `/categorias`, uma página com animais em destaque e grupos de Alimentação e Cuidados e acessórios. A barra inferior mantém cinco destinos. Dropdowns funcionam por clique/teclado e fecham com Escape, clique externo ou saída de foco.
+
+Validação: build, ESLint e TypeScript; navegação em 320, 375, 390, 430, 768, 1024 e 1440 px, sem rolagem horizontal, incluindo consulta por espécie e verificação automatizada WCAG A/AA em 390 px. Reprodução: `npx playwright test --config playwright.navigation.config.ts`, após `npm run build`.
