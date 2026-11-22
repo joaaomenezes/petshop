@@ -100,3 +100,7 @@ Em `/admin/categorias`, o bloco “Importar subcategorias da Pet Piraju” permi
 A execução no Supabase depende do clique em uma sessão administrativa autenticada; a preparação do importador não significa que os registros remotos já foram criados. Nenhum segredo privado foi solicitado ou incluído no código.
 
 O menu e os destaques da Home continuam mostrando categorias raiz. O catálogo mantém as subcategorias nos filtros e passa a incluir produtos descendentes ao selecionar uma categoria pai, combinando normalmente com Cachorros/Gatos.
+
+## Categoria principal e subcategoria no produto
+
+O formulário de produto agora separa Categoria principal e Subcategoria (opcional). A segunda lista mostra somente as subcategorias da principal selecionada; mudar a principal limpa a escolha anterior. Ao editar um produto existente, ambos os campos são derivados do vínculo atual, sem reclassificar produtos automaticamente. É possível manter um produto diretamente na categoria principal. O banco continua recebendo um único `category_id`, correspondente ao nível mais específico escolhido, sem alteração de tabelas ou slugs.

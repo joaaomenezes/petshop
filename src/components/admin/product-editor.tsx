@@ -3,6 +3,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { ProductCategories } from "./product-categories";
 import {
   saveProduct,
   uploadImage,
@@ -176,24 +177,11 @@ export function ProductEditor({
               ))}
             </select>
           </label>
-          <label>
-            Categoria
-            <select
-              required
-              value={product.category_id}
-              onChange={(e) =>
-                setProduct((p) => ({ ...p, category_id: e.target.value }))
-              }
-            >
-              <option value="">Selecione</option>
-              {data.categories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                  {!c.active ? " (inativa)" : ""}
-                </option>
-              ))}
-            </select>
-          </label>
+          <ProductCategories
+            categories={data.categories}
+            value={product.category_id}
+            onChange={(id) => setProduct((p) => ({ ...p, category_id: id }))}
+          />
           <label>
             Espécie
             <select
