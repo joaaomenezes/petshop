@@ -104,3 +104,9 @@ O menu e os destaques da Home continuam mostrando categorias raiz. O catálogo m
 ## Categoria principal e subcategoria no produto
 
 O formulário de produto agora separa Categoria principal e Subcategoria (opcional). A segunda lista mostra somente as subcategorias da principal selecionada; mudar a principal limpa a escolha anterior. Ao editar um produto existente, ambos os campos são derivados do vínculo atual, sem reclassificar produtos automaticamente. É possível manter um produto diretamente na categoria principal. O banco continua recebendo um único `category_id`, correspondente ao nível mais específico escolhido, sem alteração de tabelas ou slugs.
+
+## Abrangência de entrega confirmada
+
+O proprietário definiu envio para todo o Brasil. A configuração manual por cidade/CEP existente é uma base para entrega local, e não implementa cotação nacional. O próximo desenvolvimento de logística deve integrar um serviço de frete com cotação por CEP de origem/destino, peso e dimensões dos volumes, além de prazo, disponibilidade e validação do valor no servidor. O serviço ainda não foi escolhido nem contratado; faltam CEP de origem e regras de embalagem. Retirada continua como evolução futura.
+
+Na tentativa autorizada de aplicar a migration 004, a configuração local não continha conexão PostgreSQL nem token de gerenciamento, e o navegador integrado não conseguiu abrir uma sessão do painel. A consulta pública a `checkout_settings` retornou `PGRST202`. A migration permanece pendente de execução autenticada; nenhuma configuração de venda real foi ativada.
