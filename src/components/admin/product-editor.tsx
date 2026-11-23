@@ -37,7 +37,7 @@ export function ProductEditor({
   function variant(
     index: number,
     key: string,
-    value: string | number | boolean,
+    value: string | number | boolean | null,
   ) {
     setProduct((p) => ({
       ...p,
@@ -378,7 +378,7 @@ export function ProductEditor({
               {[
                 ["price_cents", "Preço de venda (centavos)"],
                 ["cost_cents", "Custo (centavos)"],
-                ["weight_grams", "Peso (g)"],
+                ["weight_grams", "Peso líquido do produto (g)"],
                 ["stock_quantity", "Estoque"],
                 ["min_stock_quantity", "Estoque mínimo"],
               ].map(([key, label]) => (
@@ -399,6 +399,55 @@ export function ProductEditor({
                 </label>
               ))}
             </div>
+            <fieldset
+              className="shipping-measurements"
+              disabled={!data.shippingSchemaReady}
+            >
+              <legend>Medidas para envio</legend>
+              {!data.shippingSchemaReady && (
+                <p role="status">
+                  Aplique a migration 202611220005_national_shipping.sql para
+                  cadastrar e salvar medidas de envio.
+                </p>
+              )}
+              <p>
+                Informe as medidas de uma unidade pronta para envio, incluindo
+                embalagem e proteção. Sem estes dados, o frete desta variante
+                não será calculado.
+              </p>
+              <div className="admin-form-grid">
+                {[
+                  ["shipping_weight_grams", "Peso com embalagem (g)"],
+                  ["package_width_cm", "Largura da embalagem (cm)"],
+                  ["package_height_cm", "Altura da embalagem (cm)"],
+                  ["package_length_cm", "Comprimento da embalagem (cm)"],
+                ].map(([key, label]) => (
+                  <label key={key}>
+                    {label}
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      min={key === "shipping_weight_grams" ? 1 : 0.01}
+                      max={key === "shipping_weight_grams" ? 1000000 : 1000}
+                      step={key === "shipping_weight_grams" ? 1 : 0.01}
+                      value={
+                        (v[key as keyof typeof v] as
+                          number | null | undefined) ?? ""
+                      }
+                      onChange={(event) =>
+                        variant(
+                          index,
+                          key,
+                          event.target.value === ""
+                            ? null
+                            : Number(event.target.value),
+                        )
+                      }
+                    />
+                  </label>
+                ))}
+              </div>
+            </fieldset>
             <label className="admin-checkbox">
               <input
                 type="checkbox"

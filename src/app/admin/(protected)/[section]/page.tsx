@@ -1,3 +1,4 @@
+import { nationalShippingEnabled } from "@/lib/checkout/national-shipping";
 import { guardAdmin } from "@/lib/admin/auth";
 import { ShippingManager } from "@/components/admin/checkout-controls";
 import type { ShippingSettings } from "@/lib/checkout/schema";
@@ -39,6 +40,9 @@ export default async function Page({
       <>
         <SettingsManager data={data} />
         <ShippingManager
+          national={nationalShippingEnabled()}
+          origin={process.env.MELHOR_ENVIO_ORIGIN_POSTAL_CODE || ""}
+          schemaReady={!!data.shippingSchemaReady}
           initial={
             shipping.error ? null : (shipping.data as ShippingSettings | null)
           }

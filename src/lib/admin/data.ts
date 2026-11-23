@@ -10,6 +10,11 @@ export const getAdminData = cache(async (): Promise<AdminData> => {
       "Não foi possível carregar o painel. Confira as migrations e tente novamente.",
     );
   const data = result.data as unknown as AdminData;
+  const shippingSchema = await db
+    .from("product_variants")
+    .select("shipping_weight_grams")
+    .limit(0);
+  data.shippingSchemaReady = !shippingSchema.error;
   data.images = await Promise.all(
     data.images.map(async (image) => {
       const signed = await db.storage

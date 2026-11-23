@@ -110,3 +110,9 @@ O formulário de produto agora separa Categoria principal e Subcategoria (opcion
 O proprietário definiu envio para todo o Brasil. A configuração manual por cidade/CEP existente é uma base para entrega local, e não implementa cotação nacional. O próximo desenvolvimento de logística deve integrar um serviço de frete com cotação por CEP de origem/destino, peso e dimensões dos volumes, além de prazo, disponibilidade e validação do valor no servidor. O serviço ainda não foi escolhido nem contratado; faltam CEP de origem e regras de embalagem. Retirada continua como evolução futura.
 
 Na tentativa autorizada de aplicar a migration 004, a configuração local não continha conexão PostgreSQL nem token de gerenciamento, e o navegador integrado não conseguiu abrir uma sessão do painel. A consulta pública a `checkout_settings` retornou `PGRST202`. A migration permanece pendente de execução autenticada; nenhuma configuração de venda real foi ativada.
+
+## Frete nacional implementado — preparação para homologação
+
+Adicionados campos de peso com embalagem e dimensões por variante, cotação Melhor Envio no servidor, escolha da modalidade na revisão, preços/prazos e assinatura das opções. O pedido nacional revalida o carrinho sob bloqueio transacional e armazena o serviço/volumes escolhidos. Produtos sem medidas ficam impedidos de cotar. O menu do painel informa a integração nacional em vez de exibir a tabela local quando o token está configurado.
+
+A migration 004 foi executada pelo proprietário (relato de sucesso). A nova migration 005 foi testada localmente e permanece pendente no Supabase hospedado por ausência de acesso administrativo de banco nesta sessão. Nenhuma medida fictícia foi gravada, nenhuma etiqueta foi comprada e pagamentos reais permanecem desativados. Configuração e limites em [FRETE-NACIONAL.md](FRETE-NACIONAL.md).

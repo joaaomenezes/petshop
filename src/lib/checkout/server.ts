@@ -92,10 +92,10 @@ export function sameOrigin(request: Request) {
   );
 }
 export async function readBody(request: Request) {
-  if (Number(request.headers.get("content-length") || 0) > 30000)
+  if (Number(request.headers.get("content-length") || 0) > 150000)
     throw Error("Requisição muito grande.");
   const text = await request.text();
-  if (text.length > 30000) throw Error("Requisição muito grande.");
+  if (text.length > 150000) throw Error("Requisição muito grande.");
   return JSON.parse(text);
 }
 export function safeCheckoutError(error: unknown) {
@@ -104,7 +104,7 @@ export function safeCheckoutError(error: unknown) {
       ? String(error.message)
       : "";
   if (
-    /Valores atualizados|Entrega ainda|fora da área|estoque insuficiente|Carrinho inválido|Quantidade inválida|Variantes duplicadas|Valor do carrinho|Limite de tentativas|Pedido expirado|Requisição diferente/.test(
+    /Frete nacional|Cotação de frete|Produto sem peso|Nenhuma entrega disponível|Não foi possível consultar as transportadoras|Valores atualizados|Entrega ainda|fora da área|estoque insuficiente|Carrinho inválido|Quantidade inválida|Variantes duplicadas|Valor do carrinho|Limite de tentativas|Pedido expirado|Requisição diferente/.test(
       message,
     )
   )

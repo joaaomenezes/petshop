@@ -133,3 +133,132 @@ test("endpoints não criam pedidos sem configuração, rejeitam origem e protege
   const cron = await request.post("/api/jobs/expire-orders");
   expect(cron.status()).toBe(401);
 });
+
+for (const width of [320, 375, 390, 430, 768, 1024, 1440]) {
+  test(`escolha de frete atualiza total e respeita endereço em ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    const orders: string[] = [];
+    page.on("request", (request) => {
+      if (
+        request.method() === "POST" &&
+        request.url().endsWith("/api/checkout/orders")
+      )
+        orders.push(request.url());
+    });
+    await page.route("**/api/checkout/quote", async (route) => {
+      const data = route.request().postDataJSON();
+      const items = data.items.map(
+        (item: { variant_id: string; quantity: number }) => ({
+          ...item,
+          product_name: "Produto de teste",
+          brand_name: "Teste",
+          sku: "TESTE",
+          label: "Unidade",
+          unit_price_cents: 1000,
+        }),
+      );
+      const base = {
+        items,
+        subtotal_cents: 1000,
+        currency: "BRL",
+        shipping_expires_at: new Date(Date.now() + 600000).toISOString(),
+      };
+      await route.fulfill({
+        json: {
+          quotes: [
+            {
+              ...base,
+              shipping_cents: 1590,
+              total_cents: 2590,
+              shipping_token: "fixture-pac",
+              shipping_service: "Correios · PAC",
+              delivery_estimate: "5 dias úteis após a postagem",
+            },
+            {
+              ...base,
+              shipping_cents: 2590,
+              total_cents: 3590,
+              shipping_token: "fixture-sedex",
+              shipping_service: "Correios · SEDEX",
+              delivery_estimate: "2 dias úteis após a postagem",
+            },
+          ],
+          paymentReady: false,
+          testMode: true,
+        },
+      });
+    });
+    await page.goto("/produtos");
+    await page
+      .locator(".product-card:visible")
+      .filter({ has: page.locator(".card-add:not(:disabled)") })
+      .first()
+      .locator(".card-add")
+      .click();
+    await page.goto("/carrinho");
+    await page.getByRole("link", { name: "Continuar para compra" }).click();
+    for (const [name, value] of [
+      ["Nome completo", "Pessoa de Teste"],
+      ["E-mail", "checkout@example.invalid"],
+      ["Telefone com DDD", "14999999999"],
+    ])
+      await page.getByLabel(name, { exact: true }).fill(value);
+    await page.getByRole("button", { name: "Continuar para entrega" }).click();
+    for (const [name, value] of [
+      ["CEP", "01018-020"],
+      ["Rua ou avenida", "Rua de Teste"],
+      ["Número", "1"],
+      ["Bairro", "Teste"],
+      ["Cidade", "São Paulo"],
+      ["UF", "SP"],
+    ])
+      await page.getByLabel(name, { exact: true }).fill(value);
+    await page
+      .getByRole("button", { name: "Consultar entrega e revisar" })
+      .click();
+    await expect(page.getByRole("radio")).toHaveCount(2);
+    await expect(page.getByRole("radio").first()).not.toBeChecked();
+    await page.getByRole("radio", { name: /Correios · PAC/ }).check();
+    await expect(page.locator(".checkout-total dd")).toContainText("25,90");
+    await page.getByRole("radio", { name: /Correios · SEDEX/ }).check();
+    await expect(page.locator(".checkout-total dd")).toContainText("35,90");
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    if (width === 390) {
+      expect(
+        (
+          await new AxeBuilder({ page })
+            .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+            .analyze()
+        ).violations,
+      ).toEqual([]);
+      await page.evaluate(() => {
+        (document.activeElement as HTMLElement)?.blur();
+        window.scrollTo(0, 0);
+      });
+      await page.screenshot({
+        path: "artifacts/national-shipping-mobile.png",
+        fullPage: true,
+      });
+    }
+    await page.getByRole("button", { name: "Editar endereço" }).click();
+    await expect(
+      page.getByRole("heading", { name: "Onde vamos entregar?", exact: true }),
+    ).toBeFocused();
+    await page.getByLabel("CEP", { exact: true }).fill("18800-332");
+    await page
+      .getByRole("button", { name: "Consultar entrega e revisar" })
+      .click();
+    await expect(page.getByRole("radio").first()).not.toBeChecked();
+    await expect(page.getByRole("radio").last()).not.toBeChecked();
+    await expect(
+      page.getByRole("button", { name: "Compra indisponível" }),
+    ).toBeDisabled();
+    expect(orders).toHaveLength(0);
+  });
+}

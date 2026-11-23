@@ -50,6 +50,7 @@ export const orderSchema = quoteSchema
   .extend({
     customer: customerSchema,
     idempotency_key: z.uuid(),
+    shipping_token: z.string().min(1).max(100000).optional(),
     expected_total_cents: z.number().int().positive().max(2147483647),
   })
   .strict();
@@ -84,6 +85,9 @@ export type Customer = z.input<typeof customerSchema>;
 export type Address = z.input<typeof addressSchema>;
 export type ShippingSettings = z.infer<typeof shippingSchema>;
 export type Quote = {
+  shipping_token?: string;
+  shipping_service?: string;
+  shipping_expires_at?: string;
   items: {
     variant_id: string;
     product_name: string;
@@ -102,6 +106,13 @@ export type Quote = {
 export type Order = Quote & {
   id: string;
   order_number: number;
+  shipping_details?: {
+    service_name: string;
+    carrier: string;
+    origin: string;
+    destination: string;
+    price_cents: number;
+  };
   customer_name: string;
   customer_email: string;
   customer_phone: string;

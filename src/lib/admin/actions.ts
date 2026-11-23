@@ -93,6 +93,27 @@ export async function saveProduct(input: unknown): Promise<Result> {
   try {
     const { db } = await requireAdmin();
     const payload = productSchema.parse(input);
+    if (
+      payload.variants.some((variant) =>
+        [
+          variant.shipping_weight_grams,
+          variant.package_width_cm,
+          variant.package_height_cm,
+          variant.package_length_cm,
+        ].some((value) => value !== undefined),
+      )
+    ) {
+      const schema = await db
+        .from("product_variants")
+        .select("shipping_weight_grams")
+        .limit(0);
+      if (schema.error)
+        return {
+          ok: false,
+          message:
+            "Aplique a migration 202611220005_national_shipping.sql antes de salvar medidas de envio. Nenhuma alteração foi salva.",
+        };
+    }
     const previous = await db
       .from("product_images")
       .select("storage_path")

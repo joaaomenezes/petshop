@@ -9,12 +9,39 @@ import {
 } from "@/lib/checkout/schema";
 export function ShippingManager({
   initial,
+  national = false,
+  origin = "",
+  schemaReady = false,
 }: {
+  national?: boolean;
+  origin?: string;
+  schemaReady?: boolean;
   initial: ShippingSettings | null;
 }) {
   const [message, setMessage] = useState("");
   const [pending, start] = useTransition();
   const router = useRouter();
+  if (national)
+    return (
+      <section className="admin-panel">
+        <h2>Entrega para todo o Brasil</h2>
+        <p>
+          Melhor Envio configurado no servidor. Origem:{" "}
+          {origin.replace(/^(\d{5})(\d{3})$/, "$1-$2")}. As opções disponíveis
+          dependem do CEP, das transportadoras e das medidas dos produtos.
+        </p>
+        <p>
+          {schemaReady
+            ? "Cadastre peso com embalagem, altura, largura e comprimento em cada variante. A escolha e o preço do frete serão apresentados no checkout."
+            : "Aplique a migration 202611220005_national_shipping.sql para liberar os campos e a cotação nacional."}
+        </p>
+        <p>
+          Pagamentos continuam no fluxo de testes. Etiquetas não são compradas
+          automaticamente. A tabela manual de entrega local não é utilizada
+          enquanto esta integração estiver configurada.
+        </p>
+      </section>
+    );
   if (!initial)
     return (
       <section className="admin-panel">

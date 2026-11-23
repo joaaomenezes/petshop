@@ -18,6 +18,34 @@ export const variantSchema = z.object({
   price_cents: integer,
   cost_cents: integer,
   weight_grams: integer,
+  shipping_weight_grams: z
+    .number()
+    .int()
+    .positive()
+    .max(1000000)
+    .nullable()
+    .optional(),
+  package_width_cm: z
+    .number()
+    .positive()
+    .max(1000)
+    .multipleOf(0.01)
+    .nullable()
+    .optional(),
+  package_height_cm: z
+    .number()
+    .positive()
+    .max(1000)
+    .multipleOf(0.01)
+    .nullable()
+    .optional(),
+  package_length_cm: z
+    .number()
+    .positive()
+    .max(1000)
+    .multipleOf(0.01)
+    .nullable()
+    .optional(),
   stock_quantity: integer,
   min_stock_quantity: integer,
   active: z.boolean(),
@@ -109,6 +137,7 @@ export type Movement = {
   order_id?: string | null;
 };
 export type AdminData = {
+  shippingSchemaReady?: boolean;
   products: AdminProduct[];
   variants: AdminVariant[];
   images: AdminImage[];

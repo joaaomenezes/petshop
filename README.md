@@ -124,3 +124,7 @@ TypeScript, ESLint e build de produção aprovados. 18 testes de lógica/Postgre
 
 O fluxo de visitante, endereço, revisão, pedidos privados, reservas e integração de pagamentos exclusivamente de testes foi implementado. A compra continua bloqueada: a migration 004 ainda não foi aplicada ao Supabase hospedado, faltam credenciais privadas, configuração HTTPS/webhook/agendador e regras definitivas de entrega. Frete automático e confirmação por e-mail permanecem pendentes. Retirada no local continua como evolução futura. Consulte [a configuração e os limites do checkout](docs/CHECKOUT.md).
 
+
+## Frete nacional
+
+Implementação e preparação do Melhor Envio: [docs/FRETE-NACIONAL.md](docs/FRETE-NACIONAL.md). Aplique a migration 005 depois da 004 e cadastre medidas reais por variante para consultar as opções. A integração de frete não ativa pagamentos reais nem compra etiquetas automaticamente.

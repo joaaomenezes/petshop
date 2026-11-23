@@ -33,6 +33,7 @@ export function Checkout({ paymentReady }: { paymentReady: boolean }) {
     city: "Piraju",
     state: "SP",
   });
+  const [shippingOptions, setShippingOptions] = useState<Quote[]>([]);
   const [quote, setQuote] = useState<Quote | null>(null);
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
@@ -64,6 +65,8 @@ export function Checkout({ paymentReady }: { paymentReady: boolean }) {
       return;
     }
     if (step === 1) {
+      setShippingOptions([]);
+      setQuote(null);
       const parsed = addressSchema.safeParse(address);
       if (!parsed.success) {
         setMessage(parsed.error.issues[0].message);
@@ -96,7 +99,8 @@ export function Checkout({ paymentReady }: { paymentReady: boolean }) {
           return;
         }
         setAddress(parsed.data);
-        setQuote(result.quote);
+        setShippingOptions(result.quotes || []);
+        setQuote(result.quote || null);
         move(2);
       } catch {
         setMessage(
@@ -108,6 +112,16 @@ export function Checkout({ paymentReady }: { paymentReady: boolean }) {
       return;
     }
     if (!paymentReady || !quote) return;
+    if (
+      quote.shipping_expires_at &&
+      Date.parse(quote.shipping_expires_at) <= Date.now()
+    ) {
+      setQuote(null);
+      setShippingOptions([]);
+      move(1);
+      setMessage("A cotação expirou. Consulte a entrega novamente.");
+      return;
+    }
     setPending(true);
     try {
       const fingerprint = Array.from(
@@ -120,6 +134,7 @@ export function Checkout({ paymentReady }: { paymentReady: boolean }) {
                 customer,
                 address,
                 total: quote.total_cents,
+                shipping: quote.shipping_token,
               }),
             ),
           ),
@@ -154,6 +169,9 @@ export function Checkout({ paymentReady }: { paymentReady: boolean }) {
           address,
           idempotency_key: idempotency.current,
           expected_total_cents: quote.total_cents,
+          ...(quote.shipping_token
+            ? { shipping_token: quote.shipping_token }
+            : {}),
         }),
       });
       const result = await response.json();
@@ -411,9 +429,37 @@ export function Checkout({ paymentReady }: { paymentReady: boolean }) {
                 </div>
                 <div>
                   <h3>Entrega</h3>
+                  {shippingOptions.length > 0 && (
+                    <fieldset className="freight-options">
+                      <legend>Escolha como receber</legend>
+                      <p>
+                        Prazo estimado após a postagem. As opções dependem do
+                        CEP e dos produtos. A cotação vale por 10 minutos.
+                      </p>
+                      {shippingOptions.map((option, index) => (
+                        <label key={index} className="freight-option">
+                          <input
+                            type="radio"
+                            name="shipping-option"
+                            checked={
+                              quote?.shipping_token === option.shipping_token
+                            }
+                            onChange={() => setQuote(option)}
+                          />
+                          <span>
+                            <strong>{option.shipping_service}</strong>
+                            <small>{option.delivery_estimate}</small>
+                          </span>
+                          <strong>{currency(option.shipping_cents)}</strong>
+                        </label>
+                      ))}
+                    </fieldset>
+                  )}
                   <p>
                     {quote?.delivery_estimate ||
-                      "Taxa e prazo ainda em configuração. Nenhuma cobrança será realizada."}
+                      (shippingOptions.length
+                        ? "Selecione uma opção de entrega acima."
+                        : "Taxa e prazo ainda em configuração. Nenhuma cobrança será realizada.")}
                   </p>
                 </div>
                 <div>

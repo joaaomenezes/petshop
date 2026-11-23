@@ -47,6 +47,7 @@ before(async () => {
     "202611220002_storage.sql",
     "202611220003_integrity.sql",
     "202611220004_checkout.sql",
+    "202611220005_national_shipping.sql",
   ])
     await db.exec(
       (
@@ -95,6 +96,10 @@ async function fixture() {
         price_cents: 8990,
         cost_cents: 4500,
         weight_grams: 3000,
+        shipping_weight_grams: 3200,
+        package_width_cm: 20,
+        package_height_cm: 10,
+        package_length_cm: 30,
         stock_quantity: 10,
         min_stock_quantity: 5,
         active: true,
@@ -420,4 +425,178 @@ test("tentativa recusada não baixa estoque e entrega só avança após aprovaç
     ).rows[0].payment_status,
     "paid",
   );
+});
+
+test("frete nacional guarda transportadora e total, impede adulteração de itens e preserva reserva", async () => {
+  const { variant } = await fixture();
+  const lines = [{ variant_id: variant, quantity: 1 }];
+  const cart = (
+    await role("anon", () =>
+      db.query<{ q: { items: unknown[]; subtotal_cents: number } }>(
+        "select checkout_shipping_cart($1) as q",
+        [JSON.stringify(lines)],
+      ),
+    )
+  ).rows[0].q;
+  const shipping = {
+    provider: "melhor_envio",
+    items: cart.items,
+    destination: "01018020",
+    origin: "18800332",
+    expires_at: new Date(Date.now() + 600000).toISOString(),
+    price_cents: 1590,
+    service_id: "1",
+    service_name: "PAC",
+    carrier: "Correios",
+    delivery_estimate: "Correios PAC — 5 dias úteis",
+    packages: [],
+  };
+  const destination = {
+    ...address,
+    postal_code: "01018020",
+    city: "São Paulo",
+  };
+  const params = [
+    "e".repeat(64),
+    crypto.randomUUID(),
+    requestHash,
+    JSON.stringify(customer),
+    JSON.stringify(destination),
+    JSON.stringify(lines),
+    10580,
+    JSON.stringify(shipping),
+  ];
+  await role("anon", () =>
+    assert.rejects(
+      db.query(
+        "select checkout_create_national($1,$2,$3,$4,$5,$6,$7,$8)",
+        params,
+      ),
+      /permission denied/,
+    ),
+  );
+  const created = (
+    await role("service_role", () =>
+      db.query<{ data: { id: string } }>(
+        "select checkout_create_national($1,$2,$3,$4,$5,$6,$7,$8) as data",
+        params,
+      ),
+    )
+  ).rows[0].data;
+  const again = (
+    await role("service_role", () =>
+      db.query<{ data: { id: string } }>(
+        "select checkout_create_national($1,$2,$3,$4,$5,$6,$7,$8) as data",
+        params,
+      ),
+    )
+  ).rows[0].data;
+  assert.equal(created.id, again.id);
+  assert.deepEqual(await balance(variant), {
+    stock_quantity: 10,
+    reserved_quantity: 1,
+  });
+  const saved = (
+    await db.query<{
+      shipping_cents: number;
+      total_cents: number;
+      shipping_details: { service_id: string };
+    }>(
+      "select shipping_cents,total_cents,shipping_details from orders where id=$1",
+      [created.id],
+    )
+  ).rows[0];
+  assert.equal(Number(saved.total_cents), 10580);
+  assert.equal(saved.shipping_cents, 1590);
+  assert.equal(saved.shipping_details.service_id, "1");
+  await db.query(
+    "update product_variants set package_width_cm=25 where id=$1",
+    [variant],
+  );
+  params[1] = crypto.randomUUID();
+  await role("service_role", () =>
+    assert.rejects(
+      db.query(
+        "select checkout_create_national($1,$2,$3,$4,$5,$6,$7,$8)",
+        params,
+      ),
+      /Valores atualizados/,
+    ),
+  );
+  assert.deepEqual(await balance(variant), {
+    stock_quantity: 10,
+    reserved_quantity: 1,
+  });
+});
+test("cotação nacional bloqueia medidas ausentes e preço de frete expirado", async () => {
+  const { variant } = await fixture();
+  await db.query(
+    "update product_variants set shipping_weight_grams=null where id=$1",
+    [variant],
+  );
+  await role("anon", () =>
+    assert.rejects(
+      db.query("select checkout_shipping_cart($1)", [
+        JSON.stringify([{ variant_id: variant, quantity: 1 }]),
+      ]),
+      /sem peso/,
+    ),
+  );
+  await db.query(
+    "update product_variants set shipping_weight_grams=3200 where id=$1",
+    [variant],
+  );
+  const lines = [{ variant_id: variant, quantity: 1 }];
+  const cart = (
+    await role("anon", () =>
+      db.query<{ q: { items: unknown[] } }>(
+        "select checkout_shipping_cart($1) as q",
+        [JSON.stringify(lines)],
+      ),
+    )
+  ).rows[0].q;
+  const shipping = {
+    provider: "melhor_envio",
+    items: cart.items,
+    destination: address.postal_code,
+    expires_at: new Date(Date.now() - 60000).toISOString(),
+    price_cents: 1000,
+    service_id: "1",
+    delivery_estimate: "Teste",
+  };
+  await role("service_role", () =>
+    assert.rejects(
+      db.query("select checkout_create_national($1,$2,$3,$4,$5,$6,$7,$8)", [
+        "f".repeat(64),
+        crypto.randomUUID(),
+        requestHash,
+        JSON.stringify(customer),
+        JSON.stringify(address),
+        JSON.stringify(lines),
+        9990,
+        JSON.stringify(shipping),
+      ]),
+      /expirada/,
+    ),
+  );
+  assert.deepEqual(await balance(variant), {
+    stock_quantity: 10,
+    reserved_quantity: 0,
+  });
+});
+
+test("campos de envio ficam legíveis ao painel e não permitem gravação direta", async () => {
+  await role("authenticated", async () => {
+    await db.query(
+      "select shipping_weight_grams,package_width_cm from product_variants limit 0",
+    );
+    await assert.rejects(
+      db.query("update product_variants set package_width_cm=10"),
+      /permission denied/,
+    );
+    await assert.rejects(
+      db.query("select save_product_before_shipping('{}')"),
+      /permission denied/,
+    );
+  });
 });

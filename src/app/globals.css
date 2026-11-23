@@ -3182,3 +3182,84 @@ footer {
     padding-top: 32px;
   }
 }
+
+.shipping-measurements {
+  margin-block: 20px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.shipping-measurements p {
+  margin-bottom: 16px;
+}
+.freight-options {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.freight-options > p {
+  margin-block: 12px;
+}
+.freight-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-block: 10px;
+  cursor: pointer;
+}
+.freight-option:has(input:checked) {
+  border-color: var(--primary);
+  background: #eef3e9;
+}
+.freight-option input {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.freight-option span {
+  flex: 1;
+  min-width: 0;
+}
+.freight-option small {
+  display: block;
+  margin-top: 6px;
+}
+@media (max-width: 400px) {
+  .freight-option {
+    flex-wrap: wrap;
+  }
+  .freight-option > strong {
+    margin-left: 32px;
+  }
+}
+
+/* Override generic admin form styles for the delivery choices inside checkout. */
+.checkout-form .freight-options {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.checkout-form .freight-option {
+  flex-direction: row;
+  align-items: center;
+  min-height: 76px;
+  text-align: left;
+  gap: 12px;
+}
+.checkout-form .freight-option input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  min-height: 20px !important;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  accent-color: var(--primary);
+  flex: 0 0 20px;
+}
+.checkout-form .freight-options legend {
+  font-size: 1rem;
+  padding: 0;
+}
